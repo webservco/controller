@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace WebServCo\Controller\Contract;
 
-use WebServCo\DependencyContainer\Contract\FactoryContainerInterface;
-use WebServCo\DependencyContainer\Contract\ServiceContainerInterface;
-use WebServCo\View\Contract\ViewContainerFactoryInterface;
-use WebServCo\View\Contract\ViewRendererInterface;
+use WebServCo\DependencyContainer\Contract\ApplicationDependencyContainerInterface;
+use WebServCo\View\Contract\ViewServicesContainerInterface;
 
 interface SpecificModuleControllerInstantiatorInterface
 {
@@ -22,11 +20,9 @@ interface SpecificModuleControllerInstantiatorInterface
      * @param array<string,string> $interfaces
      */
     public function instantiateSpecificModuleController(
+        ApplicationDependencyContainerInterface $applicationDependencyContainer,
         string $controllerClass,
-        FactoryContainerInterface $factoryContainer,
         array $interfaces,
-        ServiceContainerInterface $serviceContainer,
-        ViewContainerFactoryInterface $viewContainerFactory,
-        ViewRendererInterface $viewRenderer,
+        ViewServicesContainerInterface $viewServicesContainer,
     ): ControllerInterface;
 }

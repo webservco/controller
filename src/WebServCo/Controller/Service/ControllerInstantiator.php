@@ -9,12 +9,13 @@ use UnexpectedValueException;
 use WebServCo\Controller\Contract\ControllerInstantiatorInterface;
 use WebServCo\Controller\Contract\ControllerInterface;
 use WebServCo\Controller\Contract\SpecificModuleControllerInstantiatorInterface;
-use WebServCo\DependencyContainer\Contract\FactoryContainerInterface;
-use WebServCo\DependencyContainer\Contract\ServiceContainerInterface;
+use WebServCo\DependencyContainer\Contract\ApplicationDependencyContainerInterface;
 use WebServCo\Route\Contract\RouteConfigurationInterface;
 use WebServCo\Route\Service\ControllerView\RouteConfiguration;
 use WebServCo\View\Contract\ViewContainerFactoryInstantiatorInterface;
 use WebServCo\View\Contract\ViewRendererInstantiatorInterface;
+use WebServCo\View\Contract\ViewServicesContainerInterface;
+use WebServCo\View\Service\ViewServicesContainer;
 
 use function class_exists;
 use function class_implements;
@@ -24,8 +25,7 @@ use function is_array;
 final class ControllerInstantiator implements ControllerInstantiatorInterface
 {
     public function __construct(
-        private FactoryContainerInterface $factoryContainer,
-        private ServiceContainerInterface $serviceContainer,
+        private ApplicationDependencyContainerInterface $applicationDependencyContainer,
         private SpecificModuleControllerInstantiatorInterface $specificModuleControllerInstantiator,
         private ViewContainerFactoryInstantiatorInterface $viewContainerFactoryInstantiator,
         private ViewRendererInstantiatorInterface $viewRendererInstantiator,
@@ -47,20 +47,29 @@ final class ControllerInstantiator implements ControllerInstantiatorInterface
             throw new UnexpectedValueException('Controller does not implement required interface.');
         }
 
+        return $this->specificModuleControllerInstantiator->instantiateSpecificModuleController(
+            $this->applicationDependencyContainer,
+            $routeConfiguration->controllerClass,
+            $interfaces,
+            $this->createViewServicesContainer($routeConfiguration, $viewRendererClass),
+        );
+    }
+
+    private function createViewServicesContainer(
+        RouteConfigurationInterface $routeConfiguration,
+        string $viewRendererClass,
+    ): ViewServicesContainerInterface {
+        if (!$routeConfiguration instanceof RouteConfiguration) {
+            throw new UnexpectedValueException('Route configuration is not of controller/view type.');
+        }
+
         $viewContainerFactory = $this->viewContainerFactoryInstantiator->instantiateViewContainerFactory(
             $routeConfiguration->viewContainerFactoryClass,
         );
 
         $viewRenderer = $this->viewRendererInstantiator->instantiateViewRenderer($viewRendererClass);
 
-        return $this->specificModuleControllerInstantiator->instantiateSpecificModuleController(
-            $routeConfiguration->controllerClass,
-            $this->factoryContainer,
-            $interfaces,
-            $this->serviceContainer,
-            $viewContainerFactory,
-            $viewRenderer,
-        );
+        return new ViewServicesContainer($viewContainerFactory, $viewRenderer);
     }
 
     /**

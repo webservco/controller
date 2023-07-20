@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace WebServCo\Controller\Contract;
 
-use WebServCo\View\Contract\ViewContainerFactoryInterface;
-use WebServCo\View\Contract\ViewRendererInterface;
+use WebServCo\View\Contract\ViewServicesContainerInterface;
 
 /**
  * A specific, module-level controller instantiator interface.
@@ -14,7 +13,6 @@ interface ModuleControllerInstantiatorInterface
 {
     public function instantiateSpecificModuleController(
         string $controllerClassName,
-        ViewContainerFactoryInterface $viewContainerFactory,
-        ViewRendererInterface $viewRenderer,
+        ViewServicesContainerInterface $viewServicesContainer,
     ): ControllerInterface;
 }

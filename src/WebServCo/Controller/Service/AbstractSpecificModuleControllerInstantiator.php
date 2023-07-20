@@ -9,28 +9,24 @@ use UnexpectedValueException;
 use WebServCo\Controller\Contract\ControllerInterface;
 use WebServCo\Controller\Contract\ModuleControllerInstantiatorInterface;
 use WebServCo\Controller\Contract\SpecificModuleControllerInstantiatorInterface;
-use WebServCo\DependencyContainer\Contract\FactoryContainerInterface;
-use WebServCo\DependencyContainer\Contract\ServiceContainerInterface;
-use WebServCo\View\Contract\ViewContainerFactoryInterface;
-use WebServCo\View\Contract\ViewRendererInterface;
+use WebServCo\DependencyContainer\Contract\ApplicationDependencyContainerInterface;
+use WebServCo\View\Contract\ViewServicesContainerInterface;
 
 use function class_exists;
 use function in_array;
 
 abstract class AbstractSpecificModuleControllerInstantiator implements SpecificModuleControllerInstantiatorInterface
 {
-/**
+    /**
      * Instantiate specific controller, based on a more general "module" controller.
      *
      * @param array<string,string> $interfaces
      */
     public function instantiateSpecificModuleController(
+        ApplicationDependencyContainerInterface $applicationDependencyContainer,
         string $controllerClass,
-        FactoryContainerInterface $factoryContainer,
         array $interfaces,
-        ServiceContainerInterface $serviceContainer,
-        ViewContainerFactoryInterface $viewContainerFactory,
-        ViewRendererInterface $viewRenderer,
+        ViewServicesContainerInterface $viewServicesContainer,
     ): ControllerInterface {
 
         $availableModuleControllerInstantiators = $this->getAvailableModuleControllerInstantiators();
@@ -38,16 +34,11 @@ abstract class AbstractSpecificModuleControllerInstantiator implements SpecificM
         foreach ($availableModuleControllerInstantiators as $controllerInterfaceClass => $instantiatorClass) {
             if (in_array($controllerInterfaceClass, $interfaces, true)) {
                 $instantiator = $this->instantiateModuleControllerInstantiator(
+                    $applicationDependencyContainer,
                     $instantiatorClass,
-                    $factoryContainer,
-                    $serviceContainer,
                 );
 
-                return $instantiator->instantiateSpecificModuleController(
-                    $controllerClass,
-                    $viewContainerFactory,
-                    $viewRenderer,
-                );
+                return $instantiator->instantiateSpecificModuleController($controllerClass, $viewServicesContainer);
             }
         }
 
@@ -55,19 +46,20 @@ abstract class AbstractSpecificModuleControllerInstantiator implements SpecificM
     }
 
     private function instantiateModuleControllerInstantiator(
+        ApplicationDependencyContainerInterface $applicationDependencyContainer,
         string $instantiatorClass,
-        FactoryContainerInterface $factoryContainer,
-        ServiceContainerInterface $serviceContainer,
     ): ModuleControllerInstantiatorInterface {
         if (!class_exists($instantiatorClass, true)) {
             throw new OutOfRangeException('Instantiator class does not exist.');
         }
         /**
+         * Magic functionality; no static analysis.
+         *
          * Psalm error: "Cannot call constructor on an unknown class".
          *
          * @psalm-suppress MixedMethodCall
          */
-        $object = new $instantiatorClass($factoryContainer, $serviceContainer);
+        $object = new $instantiatorClass($applicationDependencyContainer);
 
         if (!$object instanceof ModuleControllerInstantiatorInterface) {
             throw new OutOfRangeException('Object is not an instance of the required interface.');
