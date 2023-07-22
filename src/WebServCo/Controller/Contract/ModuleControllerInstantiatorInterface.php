@@ -7,11 +7,11 @@ namespace WebServCo\Controller\Contract;
 use WebServCo\View\Contract\ViewServicesContainerInterface;
 
 /**
- * A specific, module-level controller instantiator interface.
+ * A module-level controller instantiator interface.
  */
 interface ModuleControllerInstantiatorInterface
 {
-    public function instantiateSpecificModuleController(
+    public function instantiateModuleController(
         string $controllerClassName,
         ViewServicesContainerInterface $viewServicesContainer,
     ): ControllerInterface;

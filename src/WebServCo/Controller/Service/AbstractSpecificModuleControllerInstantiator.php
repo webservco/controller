@@ -38,7 +38,7 @@ abstract class AbstractSpecificModuleControllerInstantiator implements SpecificM
                     $instantiatorClass,
                 );
 
-                return $instantiator->instantiateSpecificModuleController($controllerClass, $viewServicesContainer);
+                return $instantiator->instantiateModuleController($controllerClass, $viewServicesContainer);
             }
         }
 
