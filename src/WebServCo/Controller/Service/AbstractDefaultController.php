@@ -7,6 +7,7 @@ namespace WebServCo\Controller\Service;
 use Psr\Http\Message\ResponseInterface;
 use WebServCo\Controller\Contract\ControllerInterface;
 use WebServCo\DependencyContainer\Contract\ApplicationDependencyContainerInterface;
+use WebServCo\DependencyContainer\Contract\LocalDependencyContainerInterface;
 use WebServCo\DependencyContainer\Helper\ApplicationDependencyServiceAccessTrait;
 use WebServCo\View\Contract\TemplateServiceInterface;
 use WebServCo\View\Contract\ViewContainerInterface;
@@ -38,7 +39,11 @@ abstract class AbstractDefaultController implements ControllerInterface
     abstract protected function createTemplateService(string $projectPath): TemplateServiceInterface;
 
     public function __construct(
+        /** General application level dependencies */
         protected ApplicationDependencyContainerInterface $applicationDependencyContainer,
+        /** Local project dependencies. */
+        protected LocalDependencyContainerInterface $localDependencyContainer,
+        /** View services */
         protected ViewServicesContainerInterface $viewServicesContainer,
     ) {
     }
