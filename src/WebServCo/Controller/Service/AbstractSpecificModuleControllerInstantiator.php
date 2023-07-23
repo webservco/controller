@@ -10,6 +10,8 @@ use WebServCo\Controller\Contract\ControllerInterface;
 use WebServCo\Controller\Contract\ModuleControllerInstantiatorInterface;
 use WebServCo\Controller\Contract\SpecificModuleControllerInstantiatorInterface;
 use WebServCo\DependencyContainer\Contract\ApplicationDependencyContainerInterface;
+use WebServCo\DependencyContainer\Contract\LocalDependencyContainerInterface;
+use WebServCo\Reflection\Contract\ReflectionServiceInterface;
 use WebServCo\View\Contract\ViewServicesContainerInterface;
 
 use function class_exists;
@@ -26,6 +28,8 @@ abstract class AbstractSpecificModuleControllerInstantiator implements SpecificM
         ApplicationDependencyContainerInterface $applicationDependencyContainer,
         string $controllerClass,
         array $interfaces,
+        LocalDependencyContainerInterface $localDependencyContainer,
+        ReflectionServiceInterface $reflectionService,
         ViewServicesContainerInterface $viewServicesContainer,
     ): ControllerInterface {
 
@@ -33,12 +37,15 @@ abstract class AbstractSpecificModuleControllerInstantiator implements SpecificM
 
         foreach ($availableModuleControllerInstantiators as $controllerInterfaceClass => $instantiatorClass) {
             if (in_array($controllerInterfaceClass, $interfaces, true)) {
-                $instantiator = $this->instantiateModuleControllerInstantiator(
-                    $applicationDependencyContainer,
-                    $instantiatorClass,
-                );
+                $instantiator = $this->instantiateModuleControllerInstantiator($instantiatorClass);
 
-                return $instantiator->instantiateModuleController($controllerClass, $viewServicesContainer);
+                return $instantiator->instantiateModuleController(
+                    $applicationDependencyContainer,
+                    $controllerClass,
+                    $localDependencyContainer,
+                    $reflectionService,
+                    $viewServicesContainer,
+                );
             }
         }
 
@@ -46,7 +53,6 @@ abstract class AbstractSpecificModuleControllerInstantiator implements SpecificM
     }
 
     private function instantiateModuleControllerInstantiator(
-        ApplicationDependencyContainerInterface $applicationDependencyContainer,
         string $instantiatorClass,
     ): ModuleControllerInstantiatorInterface {
         if (!class_exists($instantiatorClass, true)) {
@@ -59,7 +65,7 @@ abstract class AbstractSpecificModuleControllerInstantiator implements SpecificM
          *
          * @psalm-suppress MixedMethodCall
          */
-        $object = new $instantiatorClass($applicationDependencyContainer);
+        $object = new $instantiatorClass();
 
         if (!$object instanceof ModuleControllerInstantiatorInterface) {
             throw new OutOfRangeException('Object is not an instance of the required interface.');

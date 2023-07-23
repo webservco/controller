@@ -16,21 +16,23 @@ use WebServCo\View\Contract\ViewServicesContainerInterface;
 use function class_exists;
 use function interface_exists;
 
+/**
+ * AbstractModuleControllerInstantiator
+ *
+ * No dependencies in constructor to minimize possible problems; implementations of this class are loaded dynamically.
+ * Dynamic loading is in: `AbstractSpecificModuleControllerInstantiator.instantiateModuleControllerInstantiator.
+ */
 abstract class AbstractModuleControllerInstantiator implements ModuleControllerInstantiatorInterface
 {
-    public function __construct(
-        protected ApplicationDependencyContainerInterface $applicationDependencyContainer,
-        protected LocalDependencyContainerInterface $localDependencyContainer,
-        protected ReflectionServiceInterface $reflectionService,
-    ) {
-    }
-
     /**
      * Default functionality to instantiate controller.
      * `instantiateModuleController` implementations should call this method and further validate the resulting object.
      */
     public function instantiateModuleController(
+        ApplicationDependencyContainerInterface $applicationDependencyContainer,
         string $controllerClassName,
+        LocalDependencyContainerInterface $localDependencyContainer,
+        ReflectionServiceInterface $reflectionService,
         ViewServicesContainerInterface $viewServicesContainer,
     ): ControllerInterface {
         if (!class_exists($controllerClassName, true)) {
@@ -42,14 +44,14 @@ abstract class AbstractModuleControllerInstantiator implements ModuleControllerI
         /**
          * Use reflection to validate parameters.
          */
-        $this->validateControllerClassParameters($controllerClassName);
+        $this->validateControllerClassParameters($controllerClassName, $reflectionService);
 
         /**
          * Alternative instantiation method, using reflection.
          * Note: ReflectionClass was already instantiated in the verification above, same instance will be used here.
          * (no extra overhead).
          */
-        $controllerReflectionClass = $this->reflectionService->getReflectionClass($controllerClassName);
+        $controllerReflectionClass = $reflectionService->getReflectionClass($controllerClassName);
 
         if (!$controllerReflectionClass->implementsInterface(ControllerInterface::class)) {
             throw new LogicException('Class does not implement the required interface.');
@@ -57,9 +59,9 @@ abstract class AbstractModuleControllerInstantiator implements ModuleControllerI
 
         $object = $controllerReflectionClass->newInstance(
             // Object: \WebServCo\DependencyContainer\Contract\ApplicationDependencyContainerInterface
-            $this->applicationDependencyContainer,
+            $applicationDependencyContainer,
             // Object: \WebServCo\DependencyContainer\Contract\LocalDependencyContainerInterface
-            $this->localDependencyContainer,
+            $localDependencyContainer,
             // Object: \WebServCo\View\Contract\ViewServicesContainerInterface
             $viewServicesContainer,
         );
@@ -103,13 +105,15 @@ abstract class AbstractModuleControllerInstantiator implements ModuleControllerI
         ];
     }
 
-    private function validateControllerClassParameters(string $controllerClassName): bool
-    {
+    private function validateControllerClassParameters(
+        string $controllerClassName,
+        ReflectionServiceInterface $reflectionService,
+    ): bool {
         foreach ($this->getControllerConstructorParameters() as $parameterIndex => $parameterInterface) {
             if (!interface_exists($parameterInterface)) {
                 throw new OutOfRangeException('Interface does not exist.');
             }
-            $parameterReflectionClass = $this->reflectionService->getConstructorParameterReflectionClassAtIndex(
+            $parameterReflectionClass = $reflectionService->getConstructorParameterReflectionClassAtIndex(
                 $controllerClassName,
                 $parameterIndex,
             );

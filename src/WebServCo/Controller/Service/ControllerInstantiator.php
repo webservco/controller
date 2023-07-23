@@ -10,11 +10,12 @@ use WebServCo\Controller\Contract\ControllerInstantiatorInterface;
 use WebServCo\Controller\Contract\ControllerInterface;
 use WebServCo\Controller\Contract\SpecificModuleControllerInstantiatorInterface;
 use WebServCo\DependencyContainer\Contract\ApplicationDependencyContainerInterface;
+use WebServCo\DependencyContainer\Contract\LocalDependencyContainerInterface;
+use WebServCo\Reflection\Contract\ReflectionServiceInterface;
 use WebServCo\Route\Contract\RouteConfigurationInterface;
 use WebServCo\Route\Service\ControllerView\RouteConfiguration;
 use WebServCo\View\Contract\ViewContainerFactoryInstantiatorInterface;
 use WebServCo\View\Contract\ViewRendererInstantiatorInterface;
-use WebServCo\View\Contract\ViewServicesContainerInterface;
 use WebServCo\View\Service\ViewServicesContainer;
 
 use function class_exists;
@@ -26,6 +27,7 @@ final class ControllerInstantiator implements ControllerInstantiatorInterface
 {
     public function __construct(
         private ApplicationDependencyContainerInterface $applicationDependencyContainer,
+        private ReflectionServiceInterface $reflectionService,
         private SpecificModuleControllerInstantiatorInterface $specificModuleControllerInstantiator,
         private ViewContainerFactoryInstantiatorInterface $viewContainerFactoryInstantiator,
         private ViewRendererInstantiatorInterface $viewRendererInstantiator,
@@ -33,6 +35,7 @@ final class ControllerInstantiator implements ControllerInstantiatorInterface
     }
 
     public function instantiateController(
+        LocalDependencyContainerInterface $localDependencyContainer,
         RouteConfigurationInterface $routeConfiguration,
         string $viewRendererClass,
     ): ControllerInterface {
@@ -51,6 +54,8 @@ final class ControllerInstantiator implements ControllerInstantiatorInterface
             $this->applicationDependencyContainer,
             $routeConfiguration->controllerClass,
             $interfaces,
+            $localDependencyContainer,
+            $this->reflectionService,
             $this->createViewServicesContainer($routeConfiguration, $viewRendererClass),
         );
     }
@@ -58,7 +63,7 @@ final class ControllerInstantiator implements ControllerInstantiatorInterface
     private function createViewServicesContainer(
         RouteConfigurationInterface $routeConfiguration,
         string $viewRendererClass,
-    ): ViewServicesContainerInterface {
+    ): ViewServicesContainer {
         if (!$routeConfiguration instanceof RouteConfiguration) {
             throw new UnexpectedValueException('Route configuration is not of controller/view type.');
         }
