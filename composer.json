@@ -45,6 +45,7 @@
         "php" : "^8.2",
         "psr/http-server-handler": "^1",
         "webservco/dependency-container": "^0",
+        "webservco/reflection": "^0",
         "webservco/route": "^0",
         "webservco/view": "^0"
     },
