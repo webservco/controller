@@ -29,7 +29,7 @@ abstract class AbstractModuleControllerInstantiator implements ModuleControllerI
      * Default functionality to instantiate controller.
      * `instantiateModuleController` implementations should call this method and further validate the resulting object.
      */
-    protected function instantiateModuleControllerDefault(
+    public function instantiateModuleController(
         string $controllerClassName,
         ViewServicesContainerInterface $viewServicesContainer,
     ): ControllerInterface {
