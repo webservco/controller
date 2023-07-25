@@ -53,6 +53,7 @@ abstract class AbstractModuleControllerInstantiator implements ModuleControllerI
          */
         $controllerReflectionClass = $reflectionService->getReflectionClass($controllerClassName);
 
+        // Alternative solution without reflection: class_implements.
         if (!$controllerReflectionClass->implementsInterface(ControllerInterface::class)) {
             throw new LogicException('Class does not implement the required interface.');
         }
@@ -110,7 +111,7 @@ abstract class AbstractModuleControllerInstantiator implements ModuleControllerI
         ReflectionServiceInterface $reflectionService,
     ): bool {
         foreach ($this->getControllerConstructorParameters() as $parameterIndex => $parameterInterface) {
-            if (!interface_exists($parameterInterface)) {
+            if (!interface_exists($parameterInterface, true)) {
                 throw new OutOfRangeException('Interface does not exist.');
             }
             $parameterReflectionClass = $reflectionService->getConstructorParameterReflectionClassAtIndex(
