@@ -69,6 +69,7 @@ final class ControllerInstantiator implements ControllerInstantiatorInterface
         }
 
         $viewContainerFactory = $this->viewContainerFactoryInstantiator->instantiateViewContainerFactory(
+            $this->applicationDependencyContainer->getDataExtractionContainer(),
             $routeConfiguration->viewContainerFactoryClass,
         );
 
