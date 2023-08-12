@@ -14,8 +14,8 @@ use WebServCo\DependencyContainer\Contract\LocalDependencyContainerInterface;
 use WebServCo\Reflection\Contract\ReflectionServiceInterface;
 use WebServCo\Route\Contract\RouteConfigurationInterface;
 use WebServCo\Route\Service\ControllerView\RouteConfiguration;
-use WebServCo\View\Contract\ViewContainerFactoryInstantiatorInterface;
 use WebServCo\View\Contract\ViewRendererInstantiatorInterface;
+use WebServCo\View\Factory\ViewContainerFactory;
 use WebServCo\View\Service\ViewServicesContainer;
 
 use function class_exists;
@@ -29,7 +29,6 @@ final class ControllerInstantiator implements ControllerInstantiatorInterface
         private ApplicationDependencyContainerInterface $applicationDependencyContainer,
         private ReflectionServiceInterface $reflectionService,
         private SpecificModuleControllerInstantiatorInterface $specificModuleControllerInstantiator,
-        private ViewContainerFactoryInstantiatorInterface $viewContainerFactoryInstantiator,
         private ViewRendererInstantiatorInterface $viewRendererInstantiator,
     ) {
     }
@@ -68,14 +67,9 @@ final class ControllerInstantiator implements ControllerInstantiatorInterface
             throw new UnexpectedValueException('Route configuration is not of controller/view type.');
         }
 
-        $viewContainerFactory = $this->viewContainerFactoryInstantiator->instantiateViewContainerFactory(
-            $this->applicationDependencyContainer->getDataExtractionContainer(),
-            $routeConfiguration->viewContainerFactoryClass,
-        );
-
         $viewRenderer = $this->viewRendererInstantiator->instantiateViewRenderer($viewRendererClass);
 
-        return new ViewServicesContainer($viewContainerFactory, $viewRenderer);
+        return new ViewServicesContainer(new ViewContainerFactory(), $viewRenderer);
     }
 
     /**
