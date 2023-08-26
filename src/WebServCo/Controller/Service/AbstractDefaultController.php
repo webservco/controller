@@ -4,15 +4,19 @@ declare(strict_types=1);
 
 namespace WebServCo\Controller\Service;
 
+use Fig\Http\Message\StatusCodeInterface;
 use Psr\Http\Message\ResponseInterface;
+use UnexpectedValueException;
 use WebServCo\Controller\Contract\ControllerInterface;
 use WebServCo\DependencyContainer\Contract\ApplicationDependencyContainerInterface;
 use WebServCo\DependencyContainer\Contract\LocalDependencyContainerInterface;
 use WebServCo\DependencyContainer\Helper\ApplicationDependencyServiceAccessTrait;
+use WebServCo\Http\Contract\Message\Response\StatusCodeServiceInterface;
 use WebServCo\View\Contract\TemplateServiceInterface;
 use WebServCo\View\Contract\ViewContainerInterface;
 use WebServCo\View\Contract\ViewServicesContainerInterface;
 
+use function array_key_exists;
 use function sprintf;
 
 abstract class AbstractDefaultController implements ControllerInterface
@@ -77,6 +81,24 @@ abstract class AbstractDefaultController implements ControllerInterface
         );
 
         return $response;
+    }
+
+    /**
+     * Create redirect Response.
+     *
+     * Called by individual Controller `handle` method.
+     */
+    protected function createRedirectResponse(
+        string $location,
+        int $statusCode = StatusCodeInterface::STATUS_SEE_OTHER,
+    ): ResponseInterface {
+        if (!array_key_exists($statusCode, StatusCodeServiceInterface::REDIRECT_STATUS_CODES)) {
+            throw new UnexpectedValueException('Status code not of redirect type.');
+        }
+
+        return $this->applicationDependencyContainer->getFactoryContainer()->getResponseFactory()->createResponse(
+            $statusCode,
+        )->withHeader('Location', $location);
     }
 
     /**
