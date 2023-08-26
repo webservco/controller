@@ -6,6 +6,7 @@ namespace WebServCo\Controller\Service;
 
 use Fig\Http\Message\StatusCodeInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use UnexpectedValueException;
 use WebServCo\Controller\Contract\ControllerInterface;
 use WebServCo\DependencyContainer\Contract\ApplicationDependencyContainerInterface;
@@ -30,7 +31,10 @@ abstract class AbstractDefaultController implements ControllerInterface
      * Should be customized at module level.
      * Eg. API module could use an API specific structure for the main View with some global data for all responses.
      */
-    abstract protected function createMainViewContainer(ViewContainerInterface $viewContainer): ViewContainerInterface;
+    abstract protected function createMainViewContainer(
+        ServerRequestInterface $request,
+        ViewContainerInterface $viewContainer,
+    ): ViewContainerInterface;
 
     /**
      * Create Template service (template group information).
@@ -57,8 +61,11 @@ abstract class AbstractDefaultController implements ControllerInterface
      *
      * Called by individual Controller `handle` method.
      */
-    protected function createResponse(ViewContainerInterface $viewContainer, int $code = 200): ResponseInterface
-    {
+    protected function createResponse(
+        ServerRequestInterface $request,
+        ViewContainerInterface $viewContainer,
+        int $code = 200,
+    ): ResponseInterface {
         $this->getLapTimer()->lap(
             sprintf('%s: start', __FUNCTION__),
         );
@@ -71,7 +78,7 @@ abstract class AbstractDefaultController implements ControllerInterface
             ->withBody(
                 $this->applicationDependencyContainer->getFactoryContainer()->getStreamFactory()->createStream(
                     $this->viewServicesContainer->getViewRenderer()->render(
-                        $this->createAndSetupMainViewContainer($viewContainer),
+                        $this->createAndSetupMainViewContainer($request, $viewContainer),
                     ),
                 ),
             );
@@ -104,8 +111,10 @@ abstract class AbstractDefaultController implements ControllerInterface
     /**
      * Create and set up the main ViewContainerInterface used in the response
      */
-    private function createAndSetupMainViewContainer(ViewContainerInterface $viewContainer): ViewContainerInterface
-    {
+    private function createAndSetupMainViewContainer(
+        ServerRequestInterface $request,
+        ViewContainerInterface $viewContainer,
+    ): ViewContainerInterface {
         // Set template service (template group information) to use.
         $templateService = $this->createTemplateService(
             $this->getConfigurationGetter()->getString(
@@ -115,7 +124,7 @@ abstract class AbstractDefaultController implements ControllerInterface
         $viewContainer->setTemplateService($templateService);
 
         // Create main View (general page layout containing also the rendered page template).
-        $mainViewContainer = $this->createMainViewContainer($viewContainer);
+        $mainViewContainer = $this->createMainViewContainer($request, $viewContainer);
         // Set template service (template group information) to use.
         $mainViewContainer->setTemplateService($templateService);
 
