@@ -17,6 +17,7 @@ use WebServCo\View\CommonView;
 use WebServCo\View\Contract\TemplateServiceInterface;
 use WebServCo\View\Contract\ViewContainerInterface;
 use WebServCo\View\Contract\ViewServicesContainerInterface;
+use WebServCo\View\MainView;
 
 use function array_key_exists;
 use function sprintf;
@@ -69,6 +70,22 @@ abstract class AbstractDefaultController implements ControllerInterface
         }
 
         return $this->commonView;
+    }
+
+    protected function createMainViewContainerWithTemplate(
+        ServerRequestInterface $request,
+        string $templateName,
+        ViewContainerInterface $viewContainer,
+    ): ViewContainerInterface {
+        return $this->viewServicesContainer->getViewContainerFactory()->createViewContainerFromView(
+            new MainView(
+                $this->createCommonView($request),
+                // data
+                $this->viewServicesContainer->getViewRenderer()->render($viewContainer),
+            ),
+            // Set main template to use (can be customized - eg. different "theme" - based on user preference).
+            $templateName,
+        );
     }
 
     /**
