@@ -13,6 +13,7 @@ use WebServCo\DependencyContainer\Contract\ApplicationDependencyContainerInterfa
 use WebServCo\DependencyContainer\Contract\LocalDependencyContainerInterface;
 use WebServCo\DependencyContainer\Helper\ApplicationDependencyServiceAccessTrait;
 use WebServCo\Http\Contract\Message\Response\StatusCodeServiceInterface;
+use WebServCo\View\CommonView;
 use WebServCo\View\Contract\TemplateServiceInterface;
 use WebServCo\View\Contract\ViewContainerInterface;
 use WebServCo\View\Contract\ViewServicesContainerInterface;
@@ -22,8 +23,10 @@ use function sprintf;
 
 abstract class AbstractDefaultController implements ControllerInterface
 {
-    // Shortcut access to ApplicationDependencyContainerInterface service methods.
     use ApplicationDependencyServiceAccessTrait;
+
+    // Shortcut access to ApplicationDependencyContainerInterface service methods.
+    private ?CommonView $commonView = null;
 
     /**
      * Get main ViewContainer to use.
@@ -54,6 +57,18 @@ abstract class AbstractDefaultController implements ControllerInterface
         /** View services */
         protected ViewServicesContainerInterface $viewServicesContainer,
     ) {
+    }
+
+    protected function createCommonView(ServerRequestInterface $request): CommonView
+    {
+        if ($this->commonView === null) {
+            $this->commonView = new CommonView(
+                $this->getConfigurationGetter()->getString('BASE_URL'),
+                $request->getUri()->__toString(),
+            );
+        }
+
+        return $this->commonView;
     }
 
     /**
