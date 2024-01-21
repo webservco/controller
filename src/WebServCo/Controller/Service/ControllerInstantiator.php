@@ -10,7 +10,6 @@ use WebServCo\Controller\Contract\ControllerInstantiatorInterface;
 use WebServCo\Controller\Contract\ControllerInterface;
 use WebServCo\Controller\Contract\SpecificModuleControllerInstantiatorInterface;
 use WebServCo\DependencyContainer\Contract\ApplicationDependencyContainerInterface;
-use WebServCo\DependencyContainer\Contract\LocalDependencyContainerInterface;
 use WebServCo\Reflection\Contract\ReflectionServiceInterface;
 use WebServCo\Route\Contract\RouteConfigurationInterface;
 use WebServCo\Route\Service\ControllerView\RouteConfiguration;
