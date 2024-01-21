@@ -34,7 +34,6 @@ final class ControllerInstantiator implements ControllerInstantiatorInterface
     }
 
     public function instantiateController(
-        LocalDependencyContainerInterface $localDependencyContainer,
         RouteConfigurationInterface $routeConfiguration,
         string $viewRendererClass,
     ): ControllerInterface {
@@ -53,7 +52,6 @@ final class ControllerInstantiator implements ControllerInstantiatorInterface
             $this->applicationDependencyContainer,
             $routeConfiguration->controllerClass,
             $interfaces,
-            $localDependencyContainer,
             $this->reflectionService,
             $this->createViewServicesContainer($routeConfiguration, $viewRendererClass),
         );

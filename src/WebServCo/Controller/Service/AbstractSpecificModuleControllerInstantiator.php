@@ -10,7 +10,6 @@ use WebServCo\Controller\Contract\ControllerInterface;
 use WebServCo\Controller\Contract\ModuleControllerInstantiatorInterface;
 use WebServCo\Controller\Contract\SpecificModuleControllerInstantiatorInterface;
 use WebServCo\DependencyContainer\Contract\ApplicationDependencyContainerInterface;
-use WebServCo\DependencyContainer\Contract\LocalDependencyContainerInterface;
 use WebServCo\Reflection\Contract\ReflectionServiceInterface;
 use WebServCo\View\Contract\ViewServicesContainerInterface;
 
@@ -28,7 +27,6 @@ abstract class AbstractSpecificModuleControllerInstantiator implements SpecificM
         ApplicationDependencyContainerInterface $applicationDependencyContainer,
         string $controllerClass,
         array $interfaces,
-        LocalDependencyContainerInterface $localDependencyContainer,
         ReflectionServiceInterface $reflectionService,
         ViewServicesContainerInterface $viewServicesContainer,
     ): ControllerInterface {
@@ -42,7 +40,6 @@ abstract class AbstractSpecificModuleControllerInstantiator implements SpecificM
                 return $instantiator->instantiateModuleController(
                     $applicationDependencyContainer,
                     $controllerClass,
-                    $localDependencyContainer,
                     $reflectionService,
                     $viewServicesContainer,
                 );

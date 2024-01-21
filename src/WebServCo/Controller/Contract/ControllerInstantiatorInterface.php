@@ -13,7 +13,6 @@ use WebServCo\Route\Contract\RouteConfigurationInterface;
 interface ControllerInstantiatorInterface
 {
     public function instantiateController(
-        LocalDependencyContainerInterface $localDependencyContainer,
         RouteConfigurationInterface $routeConfiguration,
         string $viewRendererClass,
     ): ControllerInterface;

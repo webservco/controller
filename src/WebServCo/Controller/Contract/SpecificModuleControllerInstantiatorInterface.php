@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace WebServCo\Controller\Contract;
 
 use WebServCo\DependencyContainer\Contract\ApplicationDependencyContainerInterface;
-use WebServCo\DependencyContainer\Contract\LocalDependencyContainerInterface;
 use WebServCo\Reflection\Contract\ReflectionServiceInterface;
 use WebServCo\View\Contract\ViewServicesContainerInterface;
 
@@ -25,7 +24,6 @@ interface SpecificModuleControllerInstantiatorInterface
         ApplicationDependencyContainerInterface $applicationDependencyContainer,
         string $controllerClass,
         array $interfaces,
-        LocalDependencyContainerInterface $localDependencyContainer,
         ReflectionServiceInterface $reflectionService,
         ViewServicesContainerInterface $viewServicesContainer,
     ): ControllerInterface;
