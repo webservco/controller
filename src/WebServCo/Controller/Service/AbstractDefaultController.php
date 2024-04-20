@@ -13,12 +13,12 @@ use WebServCo\DependencyContainer\Contract\ApplicationDependencyContainerInterfa
 use WebServCo\DependencyContainer\Contract\LocalDependencyContainerInterface;
 use WebServCo\DependencyContainer\Helper\ApplicationDependencyServiceAccessTrait;
 use WebServCo\Http\Contract\Message\Response\StatusCodeServiceInterface;
-use WebServCo\View\CommonView;
 use WebServCo\View\Contract\HTMLRendererInterface;
 use WebServCo\View\Contract\TemplateServiceInterface;
 use WebServCo\View\Contract\ViewContainerInterface;
 use WebServCo\View\Contract\ViewServicesContainerInterface;
-use WebServCo\View\MainView;
+use WebServCo\View\View\CommonView;
+use WebServCo\View\View\MainView;
 
 use function array_key_exists;
 use function sprintf;
