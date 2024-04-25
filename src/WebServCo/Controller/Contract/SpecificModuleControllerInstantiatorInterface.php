@@ -11,6 +11,16 @@ use WebServCo\View\Contract\ViewServicesContainerInterface;
 interface SpecificModuleControllerInstantiatorInterface
 {
     /**
+     * List of available controller interfaces and their instantiators.
+     *
+     * Can be
+     * - more general (eg. APIControllerInterface)
+     * - more specific (eg. FooAPIControllerInterface, BarAPIControllerInterface)
+     * - or both (in that case make sure to put more specific items before the more general)
+     *
+     * key: controller interface class
+     * value: instantiator class
+     *
      * @return array<string,string>
      */
     public function getAvailableModuleControllerInstantiators(): array;
