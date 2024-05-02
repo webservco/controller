@@ -75,6 +75,17 @@ abstract class AbstractDefaultControllerBase implements ControllerInterface
     }
 
     /**
+     * Return local implementation of LocalDependencyContainerInterface.
+     *
+     * Should be overridden by local implementations,
+     * returning local implementation of the container interface.
+     */
+    protected function getLocalDependencyContainer(): LocalDependencyContainerInterface
+    {
+        return $this->localDependencyContainer;
+    }
+
+    /**
      * Create and set up the main ViewContainerInterface used in the response
      */
     private function createAndSetupMainViewContainer(
