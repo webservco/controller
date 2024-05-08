@@ -46,25 +46,26 @@ abstract class AbstractDefaultController extends AbstractDefaultControllerBase i
      */
     protected function createResponse(
         ServerRequestInterface $request,
-        ViewContainerInterface $viewContainer,
+        ?ViewContainerInterface $viewContainer,
         int $code = 200,
     ): ResponseInterface {
         $this->applicationDependencyContainer->getServiceContainer()->getLapTimer()
         ->lap(sprintf('%s: start', __FUNCTION__));
 
-        $responseBody = $this->createResponseBody($request, $viewContainer);
-
         // Create Response.
         $response = $this->applicationDependencyContainer->getFactoryContainer()->getResponseFactory()->createResponse(
             $code,
-        )
-        ->withHeader('Content-Type', $this->viewServicesContainer->getViewRenderer()->getContentType())
-        ->withBody($responseBody);
+        );
 
-        $bodySize = $responseBody->getSize();
-
-        if ($bodySize !== null) {
-            $response = $response->withHeader('Content-Length', (string) $bodySize);
+        if ($viewContainer !== null) {
+            $responseBody = $this->createResponseBody($request, $viewContainer);
+            $bodySize = $responseBody->getSize();
+            if ($bodySize !== null) {
+                $response = $response
+                    ->withHeader('Content-Type', $this->viewServicesContainer->getViewRenderer()->getContentType())
+                    ->withBody($responseBody)
+                    ->withHeader('Content-Length', (string) $bodySize);
+            }
         }
 
         $this->applicationDependencyContainer->getServiceContainer()->getLapTimer()
