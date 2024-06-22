@@ -25,7 +25,7 @@
     "license" : "MIT",
     "name" : "webservco/controller",
     "require": {
-        "php" : "^8.2",
+        "php" : "^8.3",
         "psr/http-server-handler": "^1",
         "webservco/dependency-container": "^0",
         "webservco/reflection": "^0",
