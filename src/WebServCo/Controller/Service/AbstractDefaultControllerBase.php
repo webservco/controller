@@ -68,7 +68,7 @@ abstract class AbstractDefaultControllerBase implements ControllerInterface
         ViewContainerInterface $viewContainer,
     ): StreamInterface {
         return $this->applicationDependencyContainer->getFactoryContainer()->getStreamFactory()->createStream(
-            $this->viewServicesContainer->getViewRenderer()->render(
+            $this->viewServicesContainer->getViewRenderer()->renderViewContainer(
                 $this->createAndSetupMainViewContainer($request, $viewContainer),
             ),
         );

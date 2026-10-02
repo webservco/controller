@@ -32,7 +32,7 @@ abstract class AbstractDefaultController extends AbstractDefaultControllerBase i
             new MainView(
                 $this->createCommonView($request),
                 // data
-                $this->viewServicesContainer->getViewRenderer()->render($viewContainer),
+                $this->viewServicesContainer->getViewRenderer()->renderViewContainer($viewContainer),
             ),
             // Set main template to use (can be customized - eg. different "theme" - based on user preference).
             $templateName,
