@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace WebServCo\Controller\Service;
 
 use OutOfRangeException;
+use Override;
 use UnexpectedValueException;
 use WebServCo\Controller\Contract\ControllerInstantiatorInterface;
 use WebServCo\Controller\Contract\ControllerInterface;
@@ -32,6 +33,7 @@ final class ControllerInstantiator implements ControllerInstantiatorInterface
     ) {
     }
 
+    #[Override]
     public function instantiateController(
         RouteConfigurationInterface $routeConfiguration,
         string $viewRendererClass,

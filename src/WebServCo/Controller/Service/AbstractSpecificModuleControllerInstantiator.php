@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace WebServCo\Controller\Service;
 
 use OutOfRangeException;
+use Override;
 use UnexpectedValueException;
 use WebServCo\Controller\Contract\ControllerInterface;
 use WebServCo\Controller\Contract\ModuleControllerInstantiatorInterface;
@@ -23,6 +24,7 @@ abstract class AbstractSpecificModuleControllerInstantiator implements SpecificM
      *
      * @param array<string,string> $interfaces
      */
+    #[Override]
     public function instantiateSpecificModuleController(
         ApplicationDependencyContainerInterface $applicationDependencyContainer,
         string $controllerClass,
