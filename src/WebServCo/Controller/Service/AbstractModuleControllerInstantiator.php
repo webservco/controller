@@ -39,7 +39,7 @@ abstract class AbstractModuleControllerInstantiator implements ModuleControllerI
             throw new OutOfRangeException('Controller class does not exist.');
         }
 
-        /** @todo test performance. Reflection code block start. */
+        // @todo test performance. Reflection code block start.
 
         /**
          * Use reflection to validate parameters.
@@ -67,7 +67,7 @@ abstract class AbstractModuleControllerInstantiator implements ModuleControllerI
             $viewServicesContainer,
         );
 
-        /** @todo test performance. Reflection code block stop. */
+        // @todo test performance. Reflection code block stop.
 
         /**
          * Initial instantiation method.
