@@ -27,10 +27,10 @@
     "require": {
         "php" : "^8.4",
         "psr/http-server-handler": "^1",
-        "webservco/dependency-container": "^1",
-        "webservco/reflection": "^1",
-        "webservco/route": "^1",
-        "webservco/view": "^1"
+        "webservco/dependency-container": "^2",
+        "webservco/reflection": "^2",
+        "webservco/route": "^2",
+        "webservco/view": "^2"
     },
     "require-dev": {
         "pds/skeleton": "^1",
